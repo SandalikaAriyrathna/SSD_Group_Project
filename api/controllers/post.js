@@ -25,6 +25,7 @@ export const getPost = (req, res) => {
 };
 
 export const addPost = (req, res) => {
+    try {
     const token = req.cookies.access_token;
     if (!token) return res.status(401).json("Not authenticated!");
 
@@ -35,10 +36,13 @@ export const addPost = (req, res) => {
             "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`,`uid`) VALUES ('" + req.body.title + "','" + req.body.desc + "','" + req.body.img + "','" + req.body.cat + "','" + req.body.date + "','" + userInfo.id + "')";
 
         db.query(q, (err, data) => {
-            if (err) return res.status(500).json("Something went wrong!");
+            if (err) return res.status(500).json(err);
             return res.json("Post has been created.");
         });
     });
+    } catch (error) {
+        return res.json("Something went wrong!");
+    }
 };
 
 export const deletePost = (req, res) => {
