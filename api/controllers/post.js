@@ -15,9 +15,9 @@ export const getPosts = (req, res) => {
 
 export const getPost = (req, res) => {
     const q =
-        "SELECT p.id, `username`, `title`, `desc`, p.img, u.img AS userImg, `cat`,`date` FROM users u JOIN posts p ON u.id = p.uid WHERE p.id = '" + req.params.id + "' ";
+    "SELECT p.id, `username`, `title`, `desc`, p.img, u.img AS userImg, `cat`,`date` FROM users u JOIN posts p ON u.id = p.uid WHERE p.id = ? ";
 
-    db.query(q, (err, data) => {
+db.query(q, [req.params.id], (err, data) => {
         if (err) return res.status(500).json("Something went wrong!");
 
         return res.status(200).json(data[0]);
@@ -32,9 +32,18 @@ export const addPost = (req, res) => {
         if (err) return res.status(403).json("Token is not valid!");
 
         const q =
-            "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`,`uid`) VALUES ('" + req.body.title + "','" + req.body.desc + "','" + req.body.img + "','" + req.body.cat + "','" + req.body.date + "','" + userInfo.id + "')";
+        "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`,`uid`) VALUES (?)";
 
-        db.query(q, (err, data) => {
+    const values = [
+        req.body.title,
+        req.body.desc,
+        req.body.img,
+        req.body.cat,
+        req.body.date,
+        userInfo.id,
+    ];
+
+    db.query(q, [values], (err, data) => {
             if (err) return res.status(500).json("Something went wrong!");
             return res.json("Post has been created.");
         });
@@ -49,9 +58,9 @@ export const deletePost = (req, res) => {
         if (err) return res.status(403).json("Token is not valid!");
 
         const postId = req.params.id;
-        const q = "DELETE FROM posts WHERE `id` = '" + postId + "' AND `uid` = '" + userInfo.cat + "'";
+        const q = "DELETE FROM posts WHERE `id` = ? AND `uid` = ?";
 
-        db.query(q, (err, data) => {
+            db.query(q, [postId, userInfo.id], (err, data) => {
             if (err) return res.status(403).json("Something went wrong!");
 
             return res.json("Post has been deleted!");
@@ -68,9 +77,11 @@ export const updatePost = (req, res) => {
 
         const postId = req.params.id;
         const q =
-            "UPDATE posts SET `title`='" + req.body.title + "',`desc`='" + req.body.desc + "',`img`='" + req.body.img + "',`cat`='" + req.body.cat + "' WHERE `id` = '" + postId + "' AND `uid` = '" + userInfo.title + "'";
+        "UPDATE posts SET `title`=?,`desc`=?,`img`=?,`cat`=? WHERE `id` = ? AND `uid` = ?";
 
-        db.query(q, (err, data) => {
+    const values = [req.body.title, req.body.desc, req.body.img, req.body.cat];
+
+    db.query(q, [...values, postId, userInfo.id], (err, data) => {
             if (err) return res.status(500).json("Something went wrong!");
             return res.json("Post has been updated.");
         });
