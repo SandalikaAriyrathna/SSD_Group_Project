@@ -20,6 +20,24 @@ const corsConfig = {
     credentials: true,
     origin: true,
 };
+const allowedMethods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE']
+
+app.use((req, res, next) => {
+    if (!allowedMethods.includes(req.method)) return res.end(405, 'Method Not Allowed')
+    return next()
+})
+
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Credentials", true);
+    next();
+});
+
+app.use(
+    cors({
+        origin: "http://localhost:3000",
+    })
+);
+
 app.use(cors(corsConfig));
 
 app.use(express.json());
