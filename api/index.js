@@ -32,6 +32,12 @@ app.post("/api/upload", upload.single("file"), function (req, res) {
     res.status(200).json(file.filename);
 });
 
+// Implement the X-Frame-Options header to prevent clickjacking
+app.use((req, res, next) => {
+    res.header("X-Frame-Options", "DENY");
+    next();
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
