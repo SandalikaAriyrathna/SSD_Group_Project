@@ -23,35 +23,46 @@ export const register = (req, res) => {
     });
 };
 
-export const login = (req, res) => {
+export const login = async (req, res) => {
     //CHECK USER
 
-    const q = "SELECT * FROM users WHERE username = ?";
+    const q = "SELECT * FROM users WHERE username = '" + req.body.username + "'";
+    try {
+        const secret = process.env.RECAPTCHA_SECRET_KEY;
+        const token = req.body.reToken;
+        const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`;
+        const response = await fetch(verificationUrl).then(res => res.json());
+        // RECAPTCHA validation
+        if (response.success) {
+            console.log("success");
+        } else {
+            return res.status(404).json('Please verify that you are not a robot');
+        }
 
-    db.query(q, (err, data) => {
-        if (err) return res.status(500).json(err);
-        if (data.length === 0) return res.status(404).json("User not found!");
+        db.query(q, (err, data) => {
+            if (err) return res.status(500).json(err);
+            if (data.length === 0) return res.status(404).json("User not found!");
 
-        //Check password
-        const isPasswordCorrect = bcrypt.compareSync(
-            req.body.password,
-            data[0].password
-        );
+            //Check password
+            const isPasswordCorrect = bcrypt.compareSync(
+                req.body.password,
+                data[0].password
+            );
 
-        if (!isPasswordCorrect)
-        return res.status(400).json("Wrong username or password!");
+            if (!isPasswordCorrect)
+                return res.status(400).json("Wrong username or password!");
 
-    const token = jwt.sign({ id: data[0].id }, "jwtkey");
-    const { password, ...other } = data[0];
+            const token = jwt.sign({ id: data[0].id }, "jwtkey");
+            const { password, ...other } = data[0];
 
-    res
-        .cookie("access_token", token, {
-            httpOnly: true,
-        })
-        .status(200)
-        .json(other);
-});
-
+            res
+                .cookie("access_token", token)
+                .status(200)
+                .json(other);
+        });
+    } catch (error) {
+        return res.json("Something went wrong!");
+    }
 };
 
 export const logout = (req, res) => {
