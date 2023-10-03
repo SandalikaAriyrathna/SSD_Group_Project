@@ -30,7 +30,12 @@ const Login = () => {
                 alert('Please verify that you are not a robot')
                 return
             }
-            await login(inputs)
+            var data = {
+                username: inputs.username,
+                password: inputs.password,
+                reToken: ReCAPTCHARef.current.getValue()
+            }
+            await login(data)
             navigate("/");
         } catch (err) {
             setError(err.response.data);
