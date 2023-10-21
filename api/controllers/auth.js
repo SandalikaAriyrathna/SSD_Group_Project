@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import jwt from "jsonwebtoken";
 
 export const register = (req, res) => {
+    try{
     //CHECK EXISTING USER
     const q = "SELECT * FROM users WHERE email = ? OR username = ?";
   
@@ -23,9 +24,13 @@ export const register = (req, res) => {
         return res.status(200).json("User has been created.");
       });
     });
+    } catch (error) {
+        return res.json('Something went wrong!');
+    }
   };
 
 export const login = async (req, res) => {
+    try{
     //CHECK USER
     const secret = process.env.RECAPTCHA_SECRET_KEY;
     const token = req.body.reToken;
@@ -63,6 +68,9 @@ export const login = async (req, res) => {
             .status(200)
             .json(other);
     });
+    } catch (error) {
+        return res.json('Something went wrong!');
+    }
 
 };
 
