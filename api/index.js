@@ -5,8 +5,11 @@ import postRoutes from "./routes/posts.js";
 import cookieParser from "cookie-parser";
 import multer from "multer";
 import cors from "cors";
+import dotenv from 'dotenv';
 
 const app = express();
+
+dotenv.config();
 
 if (process.env.NODE_ENV === 'production') {
     app.use((req, res, next) => {
@@ -22,10 +25,10 @@ const corsConfig = {
 };
 const allowedMethods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE']
 
-app.use((req, res, next) => {
-    if (!allowedMethods.includes(req.method)) return res.end(405, 'Method Not Allowed')
-    return next()
-})
+// app.use((req, res, next) => {
+//     if (!allowedMethods.includes(req.method)) return res.end(405, 'Method Not Allowed')
+//     return next()
+// })
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Credentials", true);
