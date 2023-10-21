@@ -8,7 +8,7 @@ export const getPosts = (req, res) => {
             : 'SELECT * FROM posts';
 
         db.query(q, [req.query.cat], (err, data) => {
-            if (err) return res.status(500).send(err);
+            if (err) return res.status(500).json("Something went wrong!");
 
             return res.status(200).json(data);
         });
@@ -54,7 +54,7 @@ export const addPost = (req, res) => {
             ];
 
             db.query(q, [values], (err, data) => {
-                if (err) return res.status(500).json(err);
+                if (err) return res.status(500).json("Something went wrong!");
                 return res.json("Post has been created.");
             });
         });
