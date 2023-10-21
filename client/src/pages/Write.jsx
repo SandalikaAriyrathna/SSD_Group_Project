@@ -37,7 +37,7 @@ const Write = () => {
                     cat,
                     img: file ? imgUrl : "",
                 })
-                : await axios.post(`/posts/`, {
+                : await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/posts`, {
                     title,
                     desc: value,
                     cat,

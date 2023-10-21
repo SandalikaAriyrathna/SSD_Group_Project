@@ -16,7 +16,7 @@ const Login = () => {
 
     const navigate = useNavigate();
 
-    const { login } = useContext(AuthContext);
+    const { login, setUser } = useContext(AuthContext);
 
 
     const handleChange = (e) => {
@@ -53,6 +53,8 @@ const Login = () => {
     const onSuccess = (e) => {
         console.log("onSuccess");
         console.log(e);
+        setUser({ "id": e.profileObj.googleId, "username": e.profileObj.givenName, "img": null, "email": e.profileObj.email }, { token: e.tokenId });
+        navigate("/");
     };
 
 

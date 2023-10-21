@@ -74,6 +74,14 @@ export const login = async (req, res) => {
 
 };
 
+export const setToken = (req, res) => {
+    res
+        .cookie("access_token", req.body.token, {
+            httpOnly: true,
+        })
+        .status(200).json("Token has been set.");
+}
+
 export const logout = (req, res) => {
     try {
 
